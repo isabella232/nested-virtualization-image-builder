@@ -7,5 +7,3 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManage
 
 # Install tools
 choco install -y packer azcopy10 git
-
-Restart-Computer -Force
