@@ -1,3 +1,5 @@
+$ErrorActionPreference = "Stop"
+
 # Configure networking for nested VMs
 New-VMSwitch -Name VmNAT -SwitchType Internal
 Get-NetAdapter "vEthernet (VmNAT)" | New-NetIPAddress -IPAddress 192.168.100.1 -AddressFamily IPv4 -PrefixLength 24
