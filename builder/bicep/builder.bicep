@@ -172,4 +172,59 @@ resource bootstrapScript 'Microsoft.Compute/virtualMachines/extensions@2021-11-0
   }
 }
 
+resource configurationIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+  name: 'builderConfiguration'
+  location: location
+}
+
+resource virtualMachineContributor 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: subscription()
+  name: '9980e02c-c2be-4d73-94e8-173b1dc7cf3c'
+}
+
+resource configurationRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
+  name: guid(vm.id, configurationIdentity.id, virtualMachineContributor.id)
+  properties: {
+    roleDefinitionId: virtualMachineContributor.id
+    principalId: configurationIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource configurationScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+  name: 'configureBuilder'
+  location: location
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${configurationIdentity.id}': {}
+    }
+  }
+  kind: 'AzureCLI'
+  properties: {
+    azCliVersion: '2.33.1'
+    scriptContent: '''
+      set -euo pipefail
+      az vm run-command invoke --command-id RunPowerShellScript -g $RESOURCE_GROUP -n $VM --scripts @Initialize-Builder.ps1
+      az vm restart -g $RESOURCE_GROUP -n $VM
+      az vm run-command invoke --command-id RunPowerShellScript -g $RESOURCE_GROUP -n $VM --scripts @Initialize-Network.ps1
+    '''
+    retentionInterval: 'PT6H'
+    supportingScriptUris: [
+      'https://raw.githubusercontent.com/Azure-Samples/nested-virtualization-image-builder/main/builder/Initialize-Builder.ps1'
+      'https://raw.githubusercontent.com/Azure-Samples/nested-virtualization-image-builder/main/builder/Initialize-Network.ps1'
+    ]
+    environmentVariables: [
+      {
+        name: 'RESOURCE_GROUP'
+        value: resourceGroup().name
+      }
+      {
+        name: 'VM'
+        value: vm.name
+      }
+    ]
+  }
+}
+
 output principalId string = vm.identity.principalId
