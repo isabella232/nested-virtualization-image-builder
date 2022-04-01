@@ -65,3 +65,16 @@ To clean up all Azure resources deployed by this sample, you can delete the pare
 ```shell
 az group delete -n builder
 ```
+
+## Resources
+
+* [Nested Virtualization in Azure](https://azure.microsoft.com/en-us/blog/nested-virtualization-in-azure/)
+* [Nested Virtualization](https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/user-guide/nested-virtualization)
+* [Sizes for virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/sizes)
+* Packer: [Hyper-V Builder (from an ISO)](https://www.packer.io/plugins/builders/hyperv/iso)
+
+## VM sizes that support nested virtualization
+
+Most general purpose, compute-optimized, and memory-optimized VM sizes from `Dv3`/`Dsv3` and newer have nested virtualization enabled. The docs for each VM size will have the details. 
+
+For example, [Dv3 and Dsv3-series](https://docs.microsoft.com/en-us/azure/virtual-machines/dv3-dsv3-series) reads "Nested Virtualization: Supported".
