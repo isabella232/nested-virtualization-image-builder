@@ -19,7 +19,21 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2021-05-01' = {
   name: 'default'
   location: location
   properties: {
-    securityRules: []
+    securityRules: [
+      {
+        name: 'AllowRDPInbound'
+        properties: {
+          direction: 'Inbound'
+          priority: 2000
+          access: 'Allow'
+          protocol: '*'
+          sourceAddressPrefix: '*'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+          destinationPortRange: '3389'
+        }
+      }
+    ]
   }
 }
 
@@ -120,6 +134,20 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-11-01' = {
   }
 }
 
+resource contributor 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: subscription()
+  name: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+}
+
+resource vmRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
+  name: guid(resourceGroup().id, vm.id, contributor.id)
+  properties: {
+    roleDefinitionId: contributor.id
+    principalId: vm.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
 resource autoShutdown 'Microsoft.DevTestLab/schedules@2018-09-15' = {
   name: 'shutdown-computevm-builder'
   location: location
@@ -134,46 +162,8 @@ resource autoShutdown 'Microsoft.DevTestLab/schedules@2018-09-15' = {
   }
 }
 
-resource jit 'Microsoft.Security/locations/jitNetworkAccessPolicies@2020-01-01' = {
-  name: '${location}/jit-builder'
-  kind: 'Basic'
-  properties: {
-    virtualMachines: [
-      {
-        id: vm.id
-        ports: [
-          {
-            maxRequestAccessDuration: 'PT8H'
-            allowedSourceAddressPrefix: '*'
-            protocol: '*'
-            number: 3389
-          }
-        ]
-      }
-    ]
-  }
-}
-
-resource bootstrapScript 'Microsoft.Compute/virtualMachines/extensions@2021-11-01' = {
-  parent: vm
+resource bootstrapIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
   name: 'bootstrap'
-  location: location
-  properties: {
-    publisher: 'Microsoft.Compute'
-    type: 'CustomScriptExtension'
-    typeHandlerVersion: '1.10'
-    autoUpgradeMinorVersion: true
-    settings: {
-      fileUris: [
-        'https://raw.githubusercontent.com/Azure-Samples/nested-virtualization-image-builder/main/builder/Initialize-Builder.ps1'
-      ]
-      commandToExecute: 'powershell -ExecutionPolicy Unrestricted -File Initialize-Builder.ps1'
-    }
-  }
-}
-
-resource configurationIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
-  name: 'builderConfiguration'
   location: location
 }
 
@@ -182,29 +172,33 @@ resource virtualMachineContributor 'Microsoft.Authorization/roleDefinitions@2018
   name: '9980e02c-c2be-4d73-94e8-173b1dc7cf3c'
 }
 
-resource configurationRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
-  name: guid(vm.id, configurationIdentity.id, virtualMachineContributor.id)
+resource bootstrapRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
+  scope: vm
+  name: guid(vm.id, bootstrapIdentity.id, virtualMachineContributor.id)
   properties: {
     roleDefinitionId: virtualMachineContributor.id
-    principalId: configurationIdentity.properties.principalId
+    principalId: bootstrapIdentity.properties.principalId
     principalType: 'ServicePrincipal'
   }
 }
 
 resource configurationScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+  dependsOn: [
+    bootstrapRoleAssignment
+  ]
   name: 'configureBuilder'
   location: location
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${configurationIdentity.id}': {}
+      '${bootstrapIdentity.id}': {}
     }
   }
   kind: 'AzureCLI'
   properties: {
     azCliVersion: '2.33.1'
     scriptContent: '''
-      set -euo pipefail
+      set -euxo pipefail
       az vm run-command invoke --command-id RunPowerShellScript -g $RESOURCE_GROUP -n $VM --scripts @Initialize-Builder.ps1
       az vm restart -g $RESOURCE_GROUP -n $VM
       az vm run-command invoke --command-id RunPowerShellScript -g $RESOURCE_GROUP -n $VM --scripts @Initialize-Network.ps1

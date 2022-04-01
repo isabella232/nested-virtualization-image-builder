@@ -10,11 +10,6 @@ resource builderRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   location: location
 }
 
-resource imagesRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: 'images'
-  location: location
-}
-
 module builder 'builder.bicep' = {
   name: 'builder'
   scope: builderRG
