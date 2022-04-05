@@ -4,12 +4,6 @@ source "hyperv-iso" "ubuntu2004" {
 
     http_directory = "subiquity/http"
 
-    boot_wait = "5s"
-    boot_command = [
-      "<enter><enter><f6><esc><wait>",
-      "autoinstall ds=nocloud-net;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
-      "<enter><wait>"
-    ]
 
     ssh_username = "root"
     ssh_password = "to_be_disabled"
@@ -18,7 +12,12 @@ source "hyperv-iso" "ubuntu2004" {
     http_port_min = 8000
     http_port_max = 8000
 
+    boot_wait = "5s"
     boot_command = [
+      "<enter><enter><f6><esc><wait>",
+      "autoinstall ds=nocloud-net;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
+      "<enter><wait>"
+
       "<esc><wait>",
       "<esc><wait>",
       "<enter><wait>",
