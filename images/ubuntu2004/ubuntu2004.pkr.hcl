@@ -1,23 +1,22 @@
 source "hyperv-iso" "ubuntu2004" {
-    iso_url = "http://releases.ubuntu.com/20.04/ubuntu-20.04.4-desktop-amd64.iso"
-    iso_checksum = "f92f7dca5bb6690e1af0052687ead49376281c7b64fbe4179cc44025965b7d1c"
+    iso_url = "http://releases.ubuntu.com/20.04/ubuntu-20.04.4-live-server-amd64.iso"
+    iso_checksum = "28ccdb56450e643bad03bb7bcf7507ce3d8d90e8bf09e38f6bd9ac298a98eaad"
 
-    cpus = 2
-    disk_size = 10240
-    disk_block_size = 1
-    use_legacy_network_adapter = true
-    use_fixed_vhd_format = true
-    skip_compaction = true
-    differencing_disk = false
-    memory = 2048
-    switch_name = "VmNAT"
-    generation = 1
+    http_directory = "subiquity/http"
+
+    boot_wait = "5s"
+    boot_command = [
+      "<enter><enter><f6><esc><wait>",
+      "autoinstall ds=nocloud-net;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
+      "<enter><wait>"
+    ]
+
+    "shutdown_command": "shutdown -P now",
 
     ssh_username = "root"
     ssh_password = "to_be_disabled"
-    ssh_timeout = "8h"
+    ssh_timeout = "30m"
 
-    http_directory = "."
     http_port_min = 8000
     http_port_max = 8000
 
@@ -42,7 +41,7 @@ build {
 
   provisioner "shell" {
     scripts = [
-      "postinstall.sh"
+      "postinstall.sh",
       "cloudinit_install.sh"
     ]
     pause_after = "300s"
