@@ -16,8 +16,7 @@ source "hyperv-iso" "ubuntu2004" {
     boot_command = [
       "<enter><enter><f6><esc><wait>",
       "autoinstall ds=nocloud-net;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
-      "<enter><wait>"
-
+      "<enter><wait>",
       "<esc><wait>",
       "<esc><wait>",
       "<enter><wait>",
