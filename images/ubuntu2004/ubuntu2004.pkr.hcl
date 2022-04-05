@@ -11,8 +11,6 @@ source "hyperv-iso" "ubuntu2004" {
       "<enter><wait>"
     ]
 
-    shutdown_command = "shutdown -P now",
-
     ssh_username = "root"
     ssh_password = "to_be_disabled"
     ssh_timeout = "30m"
