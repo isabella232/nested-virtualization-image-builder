@@ -32,7 +32,7 @@ build {
   # TODO: Convert-VHD from vhdx
 
   provisioner "shell" {
-    #expect_disconnect = true
+    expect_disconnect = true
     scripts = [
       "scripts/postinstall.sh",
       "scripts/cloudinit_install.sh"

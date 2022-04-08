@@ -8,6 +8,6 @@ sudo apt-get update
 
 sudo apt update
 sudo apt install linux-azure linux-image-azure linux-headers-azure linux-tools-common linux-cloud-tools-common linux-tools-azure linux-cloud-tools-azure
-sudo apt full-upgrade
+sudo apt-get -y full-upgrade
 
 sudo reboot
