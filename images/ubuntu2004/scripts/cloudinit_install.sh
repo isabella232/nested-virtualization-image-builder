@@ -2,7 +2,7 @@
 
 GRUB_CMDLINE_LINUX_DEFAULT="console=tty1 console=ttyS0,115200n8 earlyprintk=ttyS0,115200 rootdelay=300 quiet splash"
 
-sudo apt update
+echo "ubuntu" | sudo -S apt update
 sudo apt install cloud-init gdisk netplan.io walinuxagent && systemctl stop walinuxagent
 
 

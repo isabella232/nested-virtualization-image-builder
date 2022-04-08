@@ -19,7 +19,7 @@ source "hyperv-iso" "ubuntu2004" {
         "autoinstall ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
         "<enter><wait>"
     ]
-    boot_wait = "1s"
+    boot_wait = "5s"
     
     shutdown_command = "echo 'ubuntu' | sudo -S shutdown -P now"
 }
@@ -29,4 +29,14 @@ build {
 
   # TODO: install Azure agent
   # TODO: deprovision
+  # TODO: Convert-VHD from vhdx
+
+  provisioner "shell" {
+    #expect_disconnect = true
+    scripts = [
+      "scripts/postinstall.sh",
+      "scripts/cloudinit_install.sh"
+    ]
+  }
 }
+
