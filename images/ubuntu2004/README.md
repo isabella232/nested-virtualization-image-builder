@@ -1,6 +1,8 @@
 # Ubuntu 20.04 Server
 
-WIP 
+We use packer with cloud-init to create an Ubuntu 20.04 vhdx, which requires [user-data and meta-data files](https://ubuntu.com/server/docs/install/autoinstall-quickstart).
+
+We must also configure the VM using post-install scripts to be suitable to run on [Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/create-upload-ubuntu).
 
 ### Create the Image
 
@@ -27,7 +29,7 @@ az login --identity
 $storageAccount = az deployment group show -g builder -n storage --query 'properties.outputs.storageAccount.value' -o tsv
 
 # Copy local vhd to blob
-azcopy copy '.\output-ubuntu\Virtual Hard Disks\ubuntu2004.vhd' "https://$storageAccount.blob.core.windows.net/images/win2022.vhd"
+azcopy copy '.\output-ubuntu2004\Virtual Hard Disks\packer-ubuntu2004.vhd' "https://$storageAccount.blob.core.windows.net/images/ubuntu2004.vhd"
 
 # Register the image
 az image create -g builder -n ubuntu2004 --os-type Linux --source "https://$storageAccount.blob.core.windows.net/images/ubuntu2004.vhd"
@@ -36,7 +38,7 @@ az image create -g builder -n ubuntu2004 --os-type Linux --source "https://$stor
 
 ### Create the VM
 
-```shell
+``` powershell
 # Create the VM
 $IMAGE_ID=$(az image show -g builder -n ubuntu2004 --query id -o tsv)
 az vm create -n ubuntu2004 -g builder --image $IMAGE_ID --generate-ssh-keys --admin-password Password#1234 --nsg default
@@ -44,7 +46,16 @@ az vm create -n ubuntu2004 -g builder --image $IMAGE_ID --generate-ssh-keys --ad
 
 ### Verify the Nginx Server
 
-WIP
+``` powershell
+# create nsg rule that allows http traffic
+az network nsg rule create --resource-group builder --nsg-name default -n AllowHttpRule --priority 501 --protocol "*" --access Allow
+
+# get ubuntu vm IP
+$IP=(az vm list-ip-addresses --resource-group builder --name ubuntu2004 --query "[].virtualMachine.network.publicIpAddresses[0].ipAddress" --output tsv)
+
+# curl IP to see nginx 
+curl http://$IP
+```
 
 ### Clean up
 
