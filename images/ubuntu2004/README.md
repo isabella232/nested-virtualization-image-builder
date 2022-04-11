@@ -41,14 +41,14 @@ az image create -g builder -n ubuntu2004 --os-type Linux --source "https://$stor
 ``` powershell
 # Create the VM
 $IMAGE_ID=$(az image show -g builder -n ubuntu2004 --query id -o tsv)
-az vm create -n ubuntu2004 -g builder --image $IMAGE_ID --generate-ssh-keys --admin-password Password#1234 --nsg default
+az vm create -n ubuntu2004 -g builder --image $IMAGE_ID --admin-password Password#1234 --nsg default
 ```
 
 ### Verify the Nginx Server
 
 ``` powershell
 # create nsg rule that allows http traffic
-az network nsg rule create --resource-group builder --nsg-name default -n AllowHttpRule --priority 501 --protocol "*" --access Allow
+az network nsg rule create --resource-group builder --nsg-name default -n AllowHttpRule --priority 501 --protocol "*" --destination-port-ranges 80 --access Allow
 
 # get ubuntu vm IP
 $IP=(az vm list-ip-addresses --resource-group builder --name ubuntu2004 --query "[].virtualMachine.network.publicIpAddresses[0].ipAddress" --output tsv)

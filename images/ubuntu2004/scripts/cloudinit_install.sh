@@ -1,8 +1,9 @@
 #!/bin/sh
 
-GRUB_CMDLINE_LINUX_DEFAULT="console=tty1 console=ttyS0,115200n8 earlyprintk=ttyS0,115200 rootdelay=300 quiet splash"
+echo "ubuntu" | sudo -S sed -i '/GRUB_CMDLINE_LINUX_DEFAULT/c\GRUB_CMDLINE_LINUX_DEFAULT="console=tty1 console=ttyS0,115200n8 earlyprintk=ttyS0,115200 rootdelay=300 quiet splash"' /etc/default/grub
+sudo update-grub
 
-echo "ubuntu" | sudo -S apt update
+sudo apt update
 sudo apt-get -y install cloud-init gdisk netplan.io walinuxagent 
 sudo systemctl stop walinuxagent 
 
@@ -60,7 +61,8 @@ sudo systemctl stop walinuxagent.service
 sudo rm -rf /var/lib/waagent/
 sudo rm -f /var/log/waagent.log
 
-sudo waagent -force -deprovision+user
-sudo rm -f ~/.bash_history
-export HISTSIZE=0
-logout
+# tmp
+#sudo waagent -force -deprovision+user
+#sudo rm -f ~/.bash_history
+#export HISTSIZE=0
+#logout
