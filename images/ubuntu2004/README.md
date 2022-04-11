@@ -17,9 +17,6 @@ git clone https://github.com/Azure-Samples/nested-virtualization-image-builder -
 cd .\nested-virtualization-image-builder\images\ubuntu2004\
 packer build .\ubuntu2004.pkr.hcl
 
-# Convert outputted vhdx to vhd
-Convert-VHD -Path '.\output-ubuntu2004\Virtual Hard Disks\packer-ubuntu2004.vhdx'  -DestinationPath '.\output-ubuntu2004\Virtual Hard Disks\packer-ubuntu2004.vhd' -VHDType Fixed
-
 # Use Managed Identity for azcopy
 azcopy login --identity
 
