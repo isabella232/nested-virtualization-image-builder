@@ -21,6 +21,9 @@ source "hyperv-iso" "ubuntu2004" {
     ]
     boot_wait = "5s"
     
+    use_fixed_vhd_format = true
+    skip_compaction = true
+    
     shutdown_command = "echo 'ubuntu' | sudo -S shutdown -P now"
 }
 
