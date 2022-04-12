@@ -19,7 +19,7 @@ source "hyperv-iso" "ubuntu2004" {
         "autoinstall ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
         "<enter><wait>"
     ]
-    boot_wait = "5s"
+    boot_wait = "1s"
     
     use_fixed_vhd_format = true
     skip_compaction = true
@@ -31,9 +31,11 @@ build {
   sources = ["sources.hyperv-iso.ubuntu2004"]
 
   provisioner "shell" {
-    expect_disconnect = true
+    execute_command = "echo 'ubuntu' | sudo -S sh -c '{{ .Vars }} {{ .Path }}'"
+
     scripts = [
-      "scripts/cloudinit_cleanup.sh"
+      "scripts/azureConfigure.sh",
+      "scripts/deprovision.sh"
     ]
   }
 }

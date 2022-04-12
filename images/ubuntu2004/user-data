@@ -8,7 +8,7 @@ autoinstall:
   ssh:
     install-server: true
   packages:
-    # Azure-tuned kernel
+    # Azure-tuned kernel and tools (including Hyper-V dependencies)
     # Includes Hyper-V KVP service to enable Packer to resolve VM IP
     - linux-azure
     - linux-image-azure
@@ -17,5 +17,7 @@ autoinstall:
     - linux-cloud-tools-common
     - linux-tools-azure
     - linux-cloud-tools-azure
+    # Azure Linux Agent (guest extensions handler)
+    - walinuxagent
     # Install nginx
     - nginx
