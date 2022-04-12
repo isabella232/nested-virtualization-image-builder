@@ -30,15 +30,10 @@ source "hyperv-iso" "ubuntu2004" {
 build {
   sources = ["sources.hyperv-iso.ubuntu2004"]
 
-  # TODO: install Azure agent
-  # TODO: deprovision
-  # TODO: Convert-VHD from vhdx
-
   provisioner "shell" {
     expect_disconnect = true
     scripts = [
-      "scripts/postinstall.sh",
-      "scripts/cloudinit_install.sh"
+      "scripts/cloudinit_cleanup.sh"
     ]
   }
 }

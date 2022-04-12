@@ -61,8 +61,7 @@ sudo systemctl stop walinuxagent.service
 sudo rm -rf /var/lib/waagent/
 sudo rm -f /var/log/waagent.log
 
-# tmp
-#sudo waagent -force -deprovision+user
-#sudo rm -f ~/.bash_history
-#export HISTSIZE=0
+sudo waagent -force -deprovision+user
+sudo rm -f ~/.bash_history
+export HISTSIZE=0
 #logout
