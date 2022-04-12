@@ -1,6 +1,6 @@
 # Ubuntu 20.04 Server
 
-We use packer with cloud-init to create an Ubuntu 20.04 vhdx, which requires [user-data and meta-data files](https://ubuntu.com/server/docs/install/autoinstall-quickstart).
+We use packer with cloud-init to create an Ubuntu 20.04 vhd, which requires [user-data and meta-data files](https://ubuntu.com/server/docs/install/autoinstall-quickstart).
 
 We must also configure the VM using post-install scripts to be suitable to run on [Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/create-upload-ubuntu).
 
