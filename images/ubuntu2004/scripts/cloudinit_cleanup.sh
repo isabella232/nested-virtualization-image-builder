@@ -5,7 +5,6 @@ sudo update-grub
 
 sudo apt update
 sudo apt-get -y install cloud-init gdisk netplan.io walinuxagent 
-sudo systemctl stop walinuxagent 
 
 sudo rm -f /etc/cloud/cloud.cfg.d/50-curtin-networking.cfg /etc/cloud/cloud.cfg.d/curtin-preserve-sources.cfg /etc/cloud/cloud.cfg.d/99-installer.cfg /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
 sudo rm -f /etc/cloud/ds-identify.cfg
@@ -64,4 +63,3 @@ sudo rm -f /var/log/waagent.log
 sudo waagent -force -deprovision+user
 sudo rm -f ~/.bash_history
 export HISTSIZE=0
-#logout
