@@ -23,7 +23,7 @@ source "hyperv-iso" "ubuntu2004" {
     
     use_fixed_vhd_format = true
     skip_compaction = true
-    
+
     shutdown_command = "echo 'ubuntu' | sudo -S shutdown -P now"
 }
 
@@ -31,10 +31,9 @@ build {
   sources = ["sources.hyperv-iso.ubuntu2004"]
 
   provisioner "shell" {
-    expect_disconnect = true
+    execute_command = "echo 'ubuntu' | sudo -S env {{ .Vars }} {{ .Path }}"
     scripts = [
       "scripts/cloudinit_cleanup.sh"
     ]
   }
 }
-
