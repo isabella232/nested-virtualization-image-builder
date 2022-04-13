@@ -1,0 +1,21 @@
+#cloud-config
+autoinstall:
+  version: 1
+  identity:
+    hostname: ubuntu2004
+    username: ubuntu
+    password: "$6$exDY1mhS4KUYCE/2$zmn9ToZwTKLhCw.b4/b.ZRTIZM30JZ4QrOQ2aOXJ8yk96xpcCof0kxKwuX1kqLG/ygbJ1f8wxED22bTL4F46P0"
+  ssh:
+    install-server: true
+  packages:
+    # Azure-tuned kernel
+    # Includes Hyper-V KVP service to enable Packer to resolve VM IP
+    - linux-azure
+    - linux-image-azure
+    - linux-headers-azure
+    - linux-tools-common
+    - linux-cloud-tools-common
+    - linux-tools-azure
+    - linux-cloud-tools-azure
+    # Install nginx
+    - nginx
